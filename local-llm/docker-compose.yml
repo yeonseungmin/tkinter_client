@@ -1,0 +1,25 @@
+# [파일명] /docker-compose.yml
+# [목적] 
+# open WebUI 를 Docker Compose로 띄우기 위함
+# 브라우저에서 http://localhost:3001 으로 접속
+
+# [실행 원리]
+# 실제 LLM 추론은 윈도우 호스트에 설치된 Ollama 가 담당하고,
+# Open WebUI는 Ollama에 연결함
+
+services:
+  open-webui:
+    image: ghcr.io/open-webui/open-webui:main
+    container_name: open-webui
+    ports:
+      - "3001:8080"
+    environment:
+      - OLLAMA_BASE_URL=${OLLAMA_BASE_URL}
+      - WEBUI_AUTH=${WEBUI_AUTH}
+    volumes:
+      - open-webui-data:/app/backend/data
+    restart: unless-stopped
+
+volumes:
+  open-webui-data:
+
