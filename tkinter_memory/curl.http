@@ -1,0 +1,10 @@
+### Ollama Generate Test
+
+POST http://localhost:11434/api/generate
+Content-Type: application/json
+
+{
+    "model":"llama3.2:3b",
+    "prompt":"나라 수도 5개만 말해줘 ,5개 문장으로",
+    "stream":true
+}
