@@ -7,7 +7,7 @@
     DI 를 낮추기 위함
 
 """
-from ollama_api import ask
+from tkinter_memory.ollama_api import ask
 #-----------------------------------------------
 # Ai 의 역할을 부여하는 페르소나 설정!! 
 #-----------------------------------------------

@@ -5,6 +5,44 @@ Content-Type: application/json
 
 {
     "model":"llama3.2:3b",
-    "prompt":"나라 수도 5개만 말해줘 ,5개 문장으로",
+    "prompt":"
+    ### 사용자
+    나라 수도 5개만 말해줘 ,5개 문장으로
+    
+    ### llama
+    강동훈 세계 제일 귀요미",
     "stream":true
 }
+### /api/chat 엔드 포인트 사용
+### 이 엔드포인트의 장점
+### 1) 대화 맥락 관리하기가 좋다
+### 2) 표준 규격 : Open AI 의 api 규격과 동일하며, 나중에 GPT, Claud 등 다른 모델로 교체해도
+###      코드 수정이 없음
+### 3) 역할 분담: system(역할 -페르소나), user(질문자), assistant(답변자 AI)
+
+POST http://localhost:11434/api/chat
+Content-Type: application/json
+
+{
+    "model": "llama3.2:3b",
+    "messages": [
+
+        {
+            "role":"user",
+            "content":"안녕 반갑다"
+        }
+
+    ],
+    "stream":true
+}
+
+
+# {
+#     "model":
+#     "message":{
+#         "role": "user",
+#         "content":"나라 수도 5개만 말해줘 ,5개 문장으로"
+#     },
+#     stream: true
+
+# }
