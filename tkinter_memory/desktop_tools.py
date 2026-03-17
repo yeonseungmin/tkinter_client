@@ -1,56 +1,65 @@
 from __future__ import annotations
-
 import platform
 import subprocess
 from typing import Any, Dict, List
 
+#---------------------------------------------------------------------
+# [추가 코드]
+# Tool Calling 에서 사용할 실제 파이썬 도구 모음 파일
+#---------------------------------------------------------------------
+
 def open_editor() -> str:
-    #현재 파이썬이 실행되고 있는 플랫폼 조사 
-    system = platform.system.lower() # Window-> window, Darwin-> darwin     
+    """운영체제에 따라 윈도우 메모장 또는 맥 TextEdit를 실행합니다."""
+    system = platform.system().lower()
 
     try:
-        if system=="windows":
-            subprocess.Popen(["notepad.exe"]) 
-            return "윈도우 메모장을 열었습니다"  
+        if system == "windows":
+            # 윈도우용 메모장 실행
+            subprocess.Popen(["notepad.exe"])
+            return "윈도우 메모장을 성공적으로 열었습니다."
         
-        elif system=="darwin":
+        elif system == "darwin":
+            # macOS용 TextEdit 실행
             subprocess.Popen(["open", "-a", "TextEdit"])
-            return "텍스트 에디터 열었습니다"
+            return "맥(macOS) TextEdit를 성공적으로 열었습니다."
         
-        else:         
-            return f"{system}은 지원하지 않는 운영체제 입니다"
-    except FileNotFoundError as e:
-        return "실행 파일을 찾을 수  없습니다." 
+        else:
+            return f"지원하지 않는 운영체제({system})입니다."
+            
+    except FileNotFoundError:
+        return "실행 파일을 찾을 수 없습니다."
     except Exception as e:
-        return f"에러 발생{str(e)}"               
-    
-#--------------------------------------------------------
-# 사용자가 어떠한 질문을 햇을때, ai가 툴을 실행해야 할지를 알려줌
-# 즉 ai에게 "야, 사용자가 이런 질문을 하면 ,넌 실행할 함수명을 나한테 다시 보내.."
-#--------------------------------------------------------
-OLLAMA_TOOL_DEFINITION: List[Dict[str, Any]] =[
+        return f"에러가 발생했습니다: {str(e)}"
+
+
+#---------------------------------------------------------------------
+# [추가 코드]
+# Ollama 에게 알려줄 도구 정의 목록
+#---------------------------------------------------------------------
+OLLAMA_TOOL_DEFINITIONS: List[Dict[str, Any]] = [
     {
         "type": "function",
         "function": {
-            "name":"open_editor",
-            "description": "사용자가 메모장, 노트패드, notepad, editor, texteditor, 텍스트 편집기를 열어 달라고 요청했을때 해당 os의 메모장을 실행해",
-            "parameters" :{
-                "type":"object",
-                "properties":{},
-                "required":[]    
+            "name": "open_editor",
+            "description": "사용자가 메모장, 노트패드, notepad, editor, 텍스트 편집기를 열어 달라고 요청했을 때 윈도우 메모장을 실행합니다.",
+            "parameters": {
+                "type": "object",
+                "properties": {},
+                "required": []
             }
         }
     }
 ]
 
-#--------------------------------------------------------
-# 모델이 우리가 정해놓은 규칙대로, 함수 실행을 원할때, 함수명과 실제 함수와의 연결
-#--------------------------------------------------------
-def execute_tool(function_name:str, arguments: Dict[str, Any] | None =None) -> str:
-    safe_arguments = arguments or {}       
 
-    #ai는 우리가 정해놓은 함수를 직접 호출할 권한이 없기 때문에, ai 전송한 메시지를 통해, 함수호출은 개발자가 진행
+#---------------------------------------------------------------------
+# [추가 코드]
+# 모델이 요청한 함수명을 실제 파이썬 함수와 연결하여 실행
+#---------------------------------------------------------------------
+def execute_tool(function_name: str, arguments: Dict[str, Any] | None = None) -> str:
+    safe_arguments = arguments or {}
+
     if function_name == "open_editor":
         return open_editor()
-    
-    return f"{function_name}알 수 없는 도구 호출입니다."
+
+    return f"알 수 없는 도구 호출입니다: {function_name}, arguments={safe_arguments}"
